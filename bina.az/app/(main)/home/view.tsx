@@ -1,10 +1,10 @@
-import FilterBuildings from "@/app/Sections/Home/Filter";
+import FilterSection from "@/app/Sections/Home/Filter";
 import BulidingCart from "@/app/Sections/Home/Building";
 export default function HomePage() {
     return (
         <div>
-            <FilterBuildings />
-            <BulidingCart/>
+            <FilterSection />
+            <BulidingCart properties={[]}/>
         </div>
     )
 }

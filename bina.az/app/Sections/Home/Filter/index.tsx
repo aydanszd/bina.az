@@ -33,8 +33,8 @@ export default function BinaFilter() {
 
     return (
         <>
-            <div className="bg-white border-b border-gray-200 mt-[70px]">
-                <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="bg-black border-b border-gray-200  ">
+                <div className=" bg-black max-w-7xl mx-auto px-4 py-4">
                     {/* Dropdowns Row */}
                     <div className="flex flex-wrap items-center gap-3 mb-4">
                         {/* Alış/Kiraye Dropdown */}
