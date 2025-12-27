@@ -16,18 +16,15 @@ model Building {
   area        Float?
   price       Float?
   
-  // Filter sahələri
   type        String   @default("Alış")      // "Alış" və ya "Kiraye"
   property    String   @default("Mənzil")    // "Mənzil", "Həyət evi", "Ofis", "Qaraj", "Torpaq", "Obyekt"
   isNew       Boolean  @default(false)       // Yeni tikili/Köhnə tikili
   rooms       Int?
   
-  // Şəkillər
   image1      String?
   image2      String?
   image3      String?
   
-  // Tarixlər
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   

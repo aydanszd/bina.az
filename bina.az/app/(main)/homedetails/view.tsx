@@ -15,31 +15,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import 'react-photo-view/dist/react-photo-view.css';
-
-interface Property {
-  id: string;
-  title: string;
-  description?: string | null;
-  location: string;
-  floor?: number | null;
-  area?: number | null;
-  price?: number | null;
-  type: string;
-  property: string;
-  isNew: boolean;
-  rooms?: number | null;
-  image1?: string | null;
-  image2?: string | null;
-  image3?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  views?: number;
-}
-
-interface PropertyDetailProps {
-  property: Property;
-  relatedProperties: Property[];
-}
+import type { PropertyDetailProps, StaticPlan, StaticParameter, Listing } from '@/app/types/homedetail';
 
 const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProperties = [] }) => {
   const [showNumber, setShowNumber] = useState(false);
@@ -50,21 +26,17 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentListings = relatedProperties?.slice(startIndex, endIndex) || [];
+  const images = [property.image1, property.image2, property.image3]
+    .filter((img): img is string => Boolean(img));
 
-  const images = [
-    property.image1,
-    property.image2,
-    property.image3
-  ].filter(Boolean);
-
-  const staticPlans = [
+  const staticPlans: StaticPlan[] = [
     { rooms: '1 otaqlılar', price: '143 925 AZN-dən' },
     { rooms: '2 otaqlılar', price: '230 440 AZN-dən' },
     { rooms: '3 otaqlılar', price: '363 440 AZN-dən' },
     { rooms: '4 otaqlılar', price: '502 600 AZN-dən' }
   ];
 
-  const staticParameters = [
+  const staticParameters: StaticParameter[] = [
     { label: 'Təhvil tarixi', value: '2028-ci ilin mart ayı', icon: Calendar },
     { label: 'Korpus sayı', value: '9', icon: Home },
     { label: 'Blok sayı', value: '11', icon: Hash },
@@ -79,8 +51,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
 
   return (
     <div className="min-h-screen mt-18 bg-white text-[#212326] antialiased max-w-7xl mx-auto">
-      {/* Header Info */}
-      <div className="max-w-[1400px] mx-auto px-4 py-4 flex justify-between items-center text-[13px]">
+      <div className="max-w-350 mx-auto px-4 py-4 flex justify-between items-center text-[13px]">
         <div className="flex items-center gap-2 text-[#8d94ad]">
           <span className="hover:text-blue-600 cursor-pointer underline decoration-dotted">Yaşayış kompleksləri</span>
           <span>/</span>
@@ -88,20 +59,18 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 pb-20">
+      <div className="max-w-350 mx-auto px-4 pb-20">
         <h1 className="text-[32px] font-bold mb-6">{property.title}</h1>
-
-        {/* Gallery Section */}
         <div className="grid grid-cols-3 gap-2 mb-8">
           <PhotoProvider>
             {images.length > 0 ? (
               <>
-                <div className="col-span-2 relative rounded-l-lg overflow-hidden group h-[440px]">
+                <div className="col-span-2 relative rounded-l-lg overflow-hidden group h-110">
                   <PhotoView src={images[0]}>
-                    <img 
-                      src={images[0]} 
-                      className="w-full h-full object-cover cursor-pointer transition-transform duration-500 group-hover:scale-105" 
-                      alt="Main" 
+                    <img
+                      src={images[0]}
+                      className="w-full h-full object-cover cursor-pointer transition-transform duration-500 group-hover:scale-105"
+                      alt="Main"
                     />
                   </PhotoView>
                   <div className="absolute top-4 left-4 flex gap-2 z-10">
@@ -123,14 +92,14 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                     </button>
                   </div>
                 </div>
-                <div className="col-span-1 flex flex-col gap-2 h-[440px]">
+                <div className="col-span-1 flex flex-col gap-2 h-110">
                   {images[1] ? (
                     <div className="flex-1 rounded-tr-lg overflow-hidden group">
                       <PhotoView src={images[1]}>
-                        <img 
-                          src={images[1]} 
-                          className="w-full h-full object-cover cursor-pointer transition-opacity group-hover:opacity-90" 
-                          alt="Side 1" 
+                        <img
+                          src={images[1]}
+                          className="w-full h-full object-cover cursor-pointer transition-opacity group-hover:opacity-90"
+                          alt="Side 1"
                         />
                       </PhotoView>
                     </div>
@@ -142,10 +111,10 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                   {images[2] ? (
                     <div className="flex-1 relative rounded-br-lg overflow-hidden group">
                       <PhotoView src={images[2]}>
-                        <img 
-                          src={images[2]} 
-                          className="w-full h-full object-cover cursor-pointer transition-opacity group-hover:opacity-90" 
-                          alt="Side 2" 
+                        <img
+                          src={images[2]}
+                          className="w-full h-full object-cover cursor-pointer transition-opacity group-hover:opacity-90"
+                          alt="Side 2"
                         />
                       </PhotoView>
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none group-hover:bg-black/30 transition-colors">
@@ -162,7 +131,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                 </div>
               </>
             ) : (
-              <div className="col-span-3 h-[440px] bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+              <div className="col-span-3 h-110 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
                 Şəkil mövcud deyil
               </div>
             )}
@@ -170,9 +139,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
         </div>
 
         <div className="grid grid-cols-3 gap-8">
-          {/* Sol Kolon */}
           <div className="col-span-2">
-            {/* Planlar Bar */}
             <div className="bg-[#f8f9fb] rounded-lg p-5 flex items-center mb-10 border border-[#f0f2f7]">
               <span className="font-bold text-[15px] mr-auto">Planlar</span>
               {staticPlans.map((plan, i) => (
@@ -182,8 +149,6 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                 </div>
               ))}
             </div>
-
-            {/* Qısa Təsvir */}
             <div className="mb-10">
               <h2 className="text-[20px] font-bold mb-2">{property.title} tikinti şirkətinə məxsus yaşayış kompleksi</h2>
               <div className="flex gap-4 text-[13px] text-[#8d94ad]">
@@ -192,8 +157,6 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                 <span>Mərtəbə sayı: 16</span>
               </div>
             </div>
-
-            {/* Kredit Seçimləri */}
             <div className="space-y-5 mb-12">
               <div className="flex gap-4 items-start">
                 <div className="bg-[#f1fcf5] p-2 rounded-lg text-[#4CAF50]">
@@ -214,13 +177,11 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                 </div>
               </div>
             </div>
-
-            {/* Parametrlər Grid */}
             <div className="mb-12">
               <h2 className="text-[20px] font-bold mb-6">Parametrlər</h2>
               <div className="grid grid-cols-4 gap-3">
                 {staticParameters.map((param, i) => (
-                  <div key={i} className="border border-[#ebeef5] rounded-xl p-4 min-h-[110px] flex flex-col justify-between hover:border-[#8d94ad] transition-colors">
+                  <div key={i} className="border border-[#ebeef5] rounded-xl p-4 min-h-27.5 flex flex-col justify-between hover:border-[#8d94ad] transition-colors">
                     <param.icon size={20} className="text-[#8d94ad]" />
                     <div>
                       <p className="text-[11px] text-[#8d94ad] mb-1">{param.label}</p>
@@ -233,8 +194,6 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                 Bütün parametrlər <ChevronDown size={16} />
               </button>
             </div>
-
-            {/* Ümumi məlumat */}
             <div className="mb-12 pt-8 border-t border-[#f0f2f7]">
               <h2 className="text-[20px] font-bold mb-6">Ümumi məlumat</h2>
               <div className="text-[14px] leading-[1.6] text-[#212326] space-y-4">
@@ -242,8 +201,6 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                 <p>{staticAboutExtra}</p>
               </div>
             </div>
-
-            {/* Yerləşmə */}
             <div className="mb-12 pt-8 border-t border-[#f0f2f7]">
               <h2 className="text-[20px] font-bold mb-6">Yerləşmə</h2>
               <div className="flex gap-2 mb-4">
@@ -251,7 +208,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                   Nəsimi
                 </span>
               </div>
-              <div className="relative w-full h-[400px] rounded-xl overflow-hidden border border-[#ebeef5]">
+              <div className="relative w-full h-100 rounded-xl overflow-hidden border border-[#ebeef5]">
                 <iframe
                   width="100%"
                   height="400"
@@ -277,7 +234,6 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
               </div>
             </div>
 
-            {/* Elanlar */}
             <div className="mb-12 pt-8 border-t border-[#f0f2f7]">
               <div className="max-w-7xl">
                 <div className="flex items-center justify-between mb-6">
@@ -337,7 +293,7 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                     }
                   ].slice(startIndex, endIndex).map((listing) => (
                     <div key={listing.id} className="bg-white rounded-lg border border-[#ebeef5] overflow-hidden hover:shadow-lg transition-shadow group">
-                      <div className="relative h-[180px] overflow-hidden">
+                      <div className="relative h-45 overflow-hidden">
                         <img
                           src={listing.image}
                           alt={listing.address}
@@ -412,12 +368,11 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
             </div>
           </div>
 
-          {/* Sağ Kolon */}
           <div className="col-span-1">
             <div className="bg-[#f8f9fb] rounded-xl border border-[#f0f2f7] p-6 sticky top-6 shadow-sm">
               <div className="flex justify-between items-start mb-8">
                 <h3 className="text-[22px] font-bold leading-tight">{property.title}</h3>
-                <div className="w-[50px] h-[50px] bg-[#004a7c] rounded-md flex items-center justify-center p-2 shrink-0">
+                <div className="w-12.5 h-12.5 bg-[#004a7c] rounded-md flex items-center justify-center p-2 shrink-0">
                   <div className="text-[8px] text-white font-black text-center leading-tight">
                     {property.title.split(' ').slice(0, 2).map((word, i) => (
                       <div key={i}>{word.toUpperCase()}</div>

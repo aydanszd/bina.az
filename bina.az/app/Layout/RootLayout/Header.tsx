@@ -54,10 +54,10 @@ export default function BinaNavbar() {
                             <Heart className="w-6 h-6 hover:text-[#946952]  text-black" />
                         </button>
 
-                        <button className="hidden sm:flex cursor-pointer items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[13px] hover:bg-green-800 transition-colors">
+                        <a href="/announcement" className="hidden sm:flex cursor-pointer items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[13px] hover:bg-green-800 transition-colors">
                             <span className="text-xl">+</span>
                             <span>Yeni elan</span>
-                        </button>
+                        </a>
 
                         <button className="p-2 cursor-pointer rounded-lg transition-colors">
                             <User className="w-6 h-6 text-black" />

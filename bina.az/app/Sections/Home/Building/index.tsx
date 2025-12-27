@@ -1,15 +1,33 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { Heart, MapPin, Bed, Maximize, Calendar, ChevronDown, SlidersHorizontal, Building2, Home, Warehouse, Building, Store, X, Search } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { Heart, MapPin, Bed, Maximize, Calendar, ChevronDown, SlidersHorizontal, Building2, Home, X, Search } from 'lucide-react';
+import type { 
+  Property, 
+  PropertyCardProps, 
+  FilterState, 
+  BinaFilterProps, 
+  PropertyGridProps 
+} from '@/app/types/homepage';
+import { CITIES } from '@/app/constants/cities';
+import { PROPERTY_TYPES, TRANSACTION_TYPES, ROOM_OPTIONS } from '@/app/constants/propertyTypes';
 
-const PropertyCard = ({ property }) => {
+const fetchProperties = async (endpoint: string): Promise<Property[]> => {
+  const response = await fetch(endpoint);
+  if (!response.ok) {
+    throw new Error('Məlumatlar yüklənmədi');
+  }
+  return response.json();
+};
+
+const PropertyCard = ({ property }: PropertyCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleCardClick = () => {
     window.location.href = `/homedetails?id=${property.id}`;
   };
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsFavorite(!isFavorite);
   };
@@ -39,7 +57,7 @@ const PropertyCard = ({ property }) => {
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-2xl font-bold text-gray-900">
-            {property.price ? `${property.price.toLocaleString()} ₼` : "Qiymət göstərilməyib"}
+            {property.price ? `${Number(property.price).toLocaleString()} ₼` : "Qiymət göstərilməyib"}
           </h3>
         </div>
 
@@ -77,14 +95,13 @@ const PropertyCard = ({ property }) => {
   );
 };
 
-const BinaFilter = ({ onFilterChange, totalCount }) => {
+const BinaFilter = ({ onFilterChange, totalCount, isLoading }: BinaFilterProps) => {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('Rayon');
   const [selectedType, setSelectedType] = useState('Alış');
   const [selectedProperty, setSelectedProperty] = useState('Mənzil');
   const [selectedRooms, setSelectedRooms] = useState('');
-  const [selectedLocations, setSelectedLocations] = useState([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
   const [areaMin, setAreaMin] = useState('');
@@ -95,22 +112,7 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [selectedBuildingType, setSelectedBuildingType] = useState('');
 
-  const rayonlar = [
-    'Abşeron r.', 'Xutor', 'Səngəçal', 'Yeni Ramana',
-    'Aşağı Güzdək', 'M.Ə.Rəsulzadə', 'Şüvəlan', 'Zabrat',
-    'Atyalı', 'Sülütəpə', 'Nərimanov r.', 'Səbail r.',
-    'Ceyranbatan', 'Xətai r.', 'Böyükşor', '20-ci sahə',
-    'Çiçək', 'Ağ şəhər', 'Nəsimi r.', 'Badamdar',
-    'Digah', 'Əhmədli', '1-ci mikrorayon', 'Bayıl',
-    'Fətməyi', 'Həzi Aslanov', '2-ci mikrorayon', 'Bibiheybət',
-    'Görədil', 'Köhnə Günəşli', 'Şıxov',
-    'Güzdək', 'NZS', '3-cü mikrorayon',
-    'Hökməli', 'Xəzər r.', '4-cü mikrorayon', 'Suraxanı r.',
-    'Köhnə Corat', 'Binə', '5-ci mikrorayon', 'Bahar',
-    'Kubinka', 'Bilgəh'
-  ];
-
-  const toggleLocation = (location) => {
+  const toggleLocation = (location: string) => {
     setSelectedLocations(prev =>
       prev.includes(location)
         ? prev.filter(l => l !== location)
@@ -119,7 +121,7 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
   };
 
   const applyFilters = () => {
-    const filters = {
+    const filters: FilterState = {
       type: selectedType,
       property: selectedProperty,
       rooms: selectedRooms,
@@ -154,59 +156,56 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
       <div className="bg-white mt-16 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            {/* Alış/Kiraye Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowTypeDropdown(!showTypeDropdown)}
-                className="flex items-center gap-2 px-4 py-[14px] border border-gray-300 rounded-[20px] hover:border-gray-400 transition-colors bg-white"
+                className="flex items-center gap-2 px-4 py-3.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors bg-white"
               >
                 <span className="text-gray-700">{selectedType}</span>
                 <ChevronDown className="w-4 h-4 text-gray-600" />
               </button>
               {showTypeDropdown && (
-                <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[150px]">
-                  <button
-                    onClick={() => { setSelectedType('Alış'); setShowTypeDropdown(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-50"
-                  >
-                    Alqı-satqı
-                  </button>
-                  <button
-                    onClick={() => { setSelectedType('Kiraye'); setShowTypeDropdown(false); }}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-50"
-                  >
-                    Kiraye
-                  </button>
+                <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-37.5">
+                  {TRANSACTION_TYPES.map(type => (
+                    <button
+                      key={type.value}
+                      onClick={() => { setSelectedType(type.value); setShowTypeDropdown(false); }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-50"
+                    >
+                      {type.label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Mənzil Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowPropertyDropdown(!showPropertyDropdown)}
-                className="flex items-center gap-2 px-4 py-[14px] border border-gray-300 rounded-[20px] hover:border-gray-400 transition-colors bg-white"
+                className="flex items-center gap-2 px-4 py-3.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors bg-white"
               >
                 <span className="text-gray-700">{selectedProperty}</span>
                 <ChevronDown className="w-4 h-4 text-gray-600" />
               </button>
               {showPropertyDropdown && (
-                <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[180px]">
-                  <button onClick={() => { setSelectedProperty('Mənzil'); setShowPropertyDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">Mənzil</button>
-                  <button onClick={() => { setSelectedProperty('Həyət evi'); setShowPropertyDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">Həyət evi/Bağ evi</button>
-                  <button onClick={() => { setSelectedProperty('Ofis'); setShowPropertyDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">Ofis</button>
-                  <button onClick={() => { setSelectedProperty('Qaraj'); setShowPropertyDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">Qaraj</button>
-                  <button onClick={() => { setSelectedProperty('Torpaq'); setShowPropertyDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">Torpaq</button>
-                  <button onClick={() => { setSelectedProperty('Obyekt'); setShowPropertyDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">Obyekt</button>
+                <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-45">
+                  {PROPERTY_TYPES.map(type => (
+                    <button
+                      key={type.value}
+                      onClick={() => { setSelectedProperty(type.value); setShowPropertyDropdown(false); }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-50"
+                    >
+                      {type.label}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Otaq sayı Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowRoomsDropdown(!showRoomsDropdown)}
-                className="flex items-center gap-2 px-4 py-[14px] border border-gray-300 rounded-[20px] hover:border-gray-400 transition-colors bg-white"
+                className="flex items-center gap-2 px-4 py-3.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors bg-white"
               >
                 <span className={selectedRooms ? "text-gray-700" : "text-gray-400"}>
                   {selectedRooms || "Otaq sayı"}
@@ -214,22 +213,25 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
                 <ChevronDown className="w-4 h-4 text-gray-600" />
               </button>
               {showRoomsDropdown && (
-                <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
+                <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-30">
                   <button onClick={() => { setSelectedRooms(''); setShowRoomsDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">Hamısı</button>
-                  <button onClick={() => { setSelectedRooms('1'); setShowRoomsDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">1</button>
-                  <button onClick={() => { setSelectedRooms('2'); setShowRoomsDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">2</button>
-                  <button onClick={() => { setSelectedRooms('3'); setShowRoomsDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">3</button>
-                  <button onClick={() => { setSelectedRooms('4'); setShowRoomsDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">4</button>
-                  <button onClick={() => { setSelectedRooms('5+'); setShowRoomsDropdown(false); }} className="w-full text-left px-4 py-2 hover:bg-gray-50">5+</button>
+                  {ROOM_OPTIONS.map(room => (
+                    <button
+                      key={room}
+                      onClick={() => { setSelectedRooms(room); setShowRoomsDropdown(false); }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-50"
+                    >
+                      {room}
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Qiymət Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setShowPriceDropdown(!showPriceDropdown)}
-                className="flex items-center gap-2 px-4 py-[14px] border border-gray-300 rounded-[20px] hover:border-gray-400 transition-colors bg-white"
+                className="flex items-center gap-2 px-4 py-3.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors bg-white"
               >
                 <span className={priceMin || priceMax ? "text-gray-700" : "text-gray-400"}>
                   {priceMin || priceMax ? `${priceMin || 0} - ${priceMax || '∞'} ₼` : "Qiymət, ₼"}
@@ -237,7 +239,7 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
                 <ChevronDown className="w-4 h-4 text-gray-600" />
               </button>
               {showPriceDropdown && (
-                <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-[450px]">
+                <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-112.5">
                   <div className="p-4 space-y-3">
                     <div className="flex gap-3 items-center">
                       <input
@@ -266,49 +268,45 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
               )}
             </div>
 
-            {/* Search Input */}
-            <div className="flex-1 min-w-[250px] relative">
+            <div className="flex-1 min-w-62.5 relative">
               <input
                 type="text"
-                placeholder="Rayon, metro, nişangah"
-                className="w-full pl-4 pr-16 py-[14px] border border-gray-300 rounded-[20px] focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
+                placeholder="Şəhər seçin"
+                className="w-full pl-4 pr-16 py-3.5 border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 transition-colors cursor-pointer"
                 onClick={() => setShowLocationModal(true)}
-                value={selectedLocations.length > 0 ? `${selectedLocations.length} rayon seçildi` : ''}
+                value={selectedLocations.length > 0 ? `${selectedLocations.length} şəhər seçildi` : ''}
                 readOnly
               />
               <button
                 onClick={() => setShowLocationModal(true)}
                 className="absolute right-5 top-1/2 -translate-y-1/2 text-blue-500 hover:text-blue-600 font-medium"
               >
-                Bakı
+                Şəhər
               </button>
             </div>
 
-            {/* Filtrlər Button */}
             <button
               onClick={() => setShowFilterModal(true)}
-              className="flex items-center gap-2 px-4 py-[14px] border border-gray-300 rounded-[20px] hover:border-gray-400 transition-colors bg-white"
+              className="flex items-center gap-2 px-4 py-3.5 border border-gray-300 rounded-full hover:border-gray-400 transition-colors bg-white"
             >
               <SlidersHorizontal className="w-4 h-4 text-gray-600" />
               <span className="text-gray-700">Filtrlər</span>
             </button>
 
-            {/* Axtar Button */}
             <button
               onClick={applyFilters}
-              className="px-6 py-[14px] bg-blue-600 text-white rounded-[20px] hover:bg-blue-700 transition-colors font-medium"
+              className="px-6 py-3.5 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-medium"
             >
               Axtar
             </button>
           </div>
 
-          {/* Property Type Icons Row */}
           <div className="flex flex-wrap items-center gap-4">
             <button
               onClick={() => {
                 setSelectedBuildingType(selectedBuildingType === 'new' ? '' : 'new');
               }}
-              className={`group flex items-center gap-2 px-4 py-[10px] rounded-[20px] transition-colors ${selectedBuildingType === 'new'
+              className={`group flex items-center gap-2 px-4 py-2.5 rounded-full transition-colors ${selectedBuildingType === 'new'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 border border-gray-100'
                 }`}
@@ -327,7 +325,7 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
               onClick={() => {
                 setSelectedBuildingType(selectedBuildingType === 'old' ? '' : 'old');
               }}
-              className={`group flex items-center gap-2 px-4 py-[10px] rounded-[20px] transition-colors ${selectedBuildingType === 'old'
+              className={`group flex items-center gap-2 px-4 py-2.5 rounded-full transition-colors ${selectedBuildingType === 'old'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 border border-gray-100'
                 }`}
@@ -344,20 +342,19 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
 
             <div className="ml-auto">
               <span className="text-gray-600">
-                {totalCount} elan
+                {isLoading ? '...' : `${totalCount} elan`}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Location Modal */}
       {showLocationModal && (
         <div className="fixed inset-0 bg-black/20 flex items-start justify-center z-50 pt-20">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] overflow-hidden">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Rayon, metro, nişangah</h2>
+                <h2 className="text-xl font-semibold">Şəhər seçin</h2>
                 <button onClick={() => setShowLocationModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
                   <X className="w-5 h-5" />
                 </button>
@@ -367,24 +364,24 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Rayon, metro, nişangah"
+                  placeholder="Şəhər axtar"
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
 
-            <div className="p-6 overflow-y-auto max-h-[400px]">
-              <div className="grid grid-cols-4 gap-4">
-                {rayonlar.map((rayon, index) => (
+            <div className="p-6 overflow-y-auto" style={{maxHeight: '400px'}}>
+              <div className="grid grid-cols-2 gap-4">
+                {CITIES.map((city, index) => (
                   <button
                     key={index}
-                    onClick={() => toggleLocation(rayon)}
-                    className={`text-left px-4 py-2 rounded-lg transition-colors ${selectedLocations.includes(rayon)
+                    onClick={() => toggleLocation(city)}
+                    className={`text-left px-4 py-3 rounded-lg transition-colors ${selectedLocations.includes(city)
                         ? 'bg-blue-100 text-blue-600 font-medium'
                         : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
                       }`}
                   >
-                    {rayon}
+                    {city}
                   </button>
                 ))}
               </div>
@@ -408,7 +405,6 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
         </div>
       )}
 
-      {/* Filter Modal */}
       {showFilterModal && (
         <div className="fixed inset-0 bg-black/20 flex items-start justify-center z-50 pt-20">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
@@ -421,8 +417,7 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
               </div>
             </div>
 
-            <div className="p-6 overflow-y-auto max-h-[500px] space-y-6">
-              {/* Qiymət */}
+            <div className="p-6 overflow-y-auto space-y-6" style={{maxHeight: '500px'}}>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Qiymət, ₼</label>
                 <div className="flex gap-2 items-center">
@@ -444,11 +439,10 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
                 </div>
               </div>
 
-              {/* Otaq sayı */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Otaq sayı</label>
                 <div className="flex gap-2">
-                  {['1', '2', '3', '4', '5+'].map(room => (
+                  {ROOM_OPTIONS.map(room => (
                     <button
                       key={room}
                       onClick={() => setSelectedRooms(room)}
@@ -463,7 +457,6 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
                 </div>
               </div>
 
-              {/* Sahə */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Sahə (m²)</label>
                 <div className="flex gap-2 items-center">
@@ -507,35 +500,37 @@ const BinaFilter = ({ onFilterChange, totalCount }) => {
   );
 };
 
-// Ana komponent - properties PROP kimi qəbul edir
-const PropertyGrid = ({ properties }) => {
-  const [filteredProperties, setFilteredProperties] = useState(properties);
-  const [filters, setFilters] = useState({});
+const PropertyGrid = ({ properties: initialProperties, apiEndpoint }: PropertyGridProps) => {
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>(initialProperties || []);
+  const [filters, setFilters] = useState<FilterState>({});
 
-  // Properties dəyişəndə filteredProperties-i yenilə
+  const { data: fetchedProperties, isLoading, isError, error } = useQuery({
+    queryKey: ['properties', apiEndpoint],
+    queryFn: () => fetchProperties(apiEndpoint!),
+    enabled: !!apiEndpoint,
+  });
+
+  const properties = apiEndpoint ? (fetchedProperties || []) : (initialProperties || []);
+
   useEffect(() => {
     setFilteredProperties(properties);
   }, [properties]);
 
-  // Filter dəyişəndə tətbiq et
   useEffect(() => {
     applyFilters();
-  }, [filters]);
+  }, [filters, properties]);
 
   const applyFilters = () => {
     let filtered = [...properties];
 
-    // Alış/Kiraye filtri - API-dan gələn "type" field-ni yoxlayır
     if (filters.type) {
       filtered = filtered.filter(p => {
         const apiType = p.type?.toLowerCase().trim();
-        const filterType = filters.type.toLowerCase();
+        const filterType = filters.type?.toLowerCase();
 
-        // "Alış" seçilibsə "alış" və ya "alqı-satqı" yoxlayırıq
         if (filterType === 'alış') {
           return apiType === 'alış' || apiType === 'alqı-satqı' || apiType === 'alqi-satqi';
         }
-        // "Kiraye" seçilibsə
         if (filterType === 'kiraye') {
           return apiType === 'kiraye' || apiType === 'kirayə';
         }
@@ -543,13 +538,11 @@ const PropertyGrid = ({ properties }) => {
       });
     }
 
-    // Property növü filtri - API-dan gələn "property" field-ni yoxlayır
     if (filters.property) {
       filtered = filtered.filter(p => {
         const apiProperty = p.property?.toLowerCase().trim();
-        const filterProperty = filters.property.toLowerCase();
+        const filterProperty = filters.property?.toLowerCase();
 
-        // Müxtəlif yazılış variantlarını yoxlayırıq
         if (filterProperty === 'mənzil') {
           return apiProperty === 'mənzil' || apiProperty === 'menzil';
         }
@@ -573,55 +566,50 @@ const PropertyGrid = ({ properties }) => {
       });
     }
 
-    // Otaq sayı filtri - API-dan gələn "rooms" rəqəmini yoxlayır
     if (filters.rooms) {
       filtered = filtered.filter(p => {
-        const roomCount = parseInt(p.rooms);
+        const roomCount = parseInt(String(p.rooms));
         if (isNaN(roomCount)) return false;
 
         if (filters.rooms === '5+') {
           return roomCount >= 5;
         } else {
-          return roomCount === parseInt(filters.rooms);
+          return roomCount === parseInt(filters.rooms || '0');
         }
       });
     }
 
-    // Qiymət filtri - API-dan gələn "price" rəqəmini yoxlayır
     if (filters.priceMin) {
       filtered = filtered.filter(p => {
-        const price = parseFloat(p.price);
-        return !isNaN(price) && price >= filters.priceMin;
+        const price = parseFloat(String(p.price));
+        return !isNaN(price) && price >= (filters.priceMin || 0);
       });
     }
     if (filters.priceMax) {
       filtered = filtered.filter(p => {
-        const price = parseFloat(p.price);
-        return !isNaN(price) && price <= filters.priceMax;
+        const price = parseFloat(String(p.price));
+        return !isNaN(price) && price <= (filters.priceMax || 0);
       });
     }
 
-    // Sahə filtri - API-dan gələn "area" rəqəmini yoxlayır
     if (filters.areaMin) {
       filtered = filtered.filter(p => {
-        const area = parseFloat(p.area);
-        return !isNaN(area) && area >= filters.areaMin;
+        const area = parseFloat(String(p.area));
+        return !isNaN(area) && area >= (filters.areaMin || 0);
       });
     }
     if (filters.areaMax) {
       filtered = filtered.filter(p => {
-        const area = parseFloat(p.area);
-        return !isNaN(area) && area <= filters.areaMax;
+        const area = parseFloat(String(p.area));
+        return !isNaN(area) && area <= (filters.areaMax || 0);
       });
     }
 
-    // Rayon/Yer filtri - API-dan gələn "location" mətni yoxlayır
     if (filters.locations && filters.locations.length > 0) {
       filtered = filtered.filter(p => {
         const locationText = p.location?.toLowerCase().trim() || '';
 
-        // Seçilmiş rayonlardan hər hansı biri location field-də varsa
-        return filters.locations.some(loc => {
+        return filters.locations!.some(loc => {
           const selectedLoc = loc.toLowerCase().trim();
           return locationText.includes(selectedLoc) ||
             locationText === selectedLoc;
@@ -629,7 +617,6 @@ const PropertyGrid = ({ properties }) => {
       });
     }
 
-    // Bina növü filtri (Yeni tikili / Köhnə tikili) - isNew field-ni yoxlayır
     if (filters.buildingType) {
       filtered = filtered.filter(p => {
         if (filters.buildingType === 'new') {
@@ -645,13 +632,39 @@ const PropertyGrid = ({ properties }) => {
     setFilteredProperties(filtered);
   };
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Yüklənir...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-lg shadow-md">
+          <p className="text-red-600 text-lg mb-4">Xəta baş verdi</p>
+          <p className="text-gray-600">{error instanceof Error ? error.message : 'Məlumatlar yüklənmədi'}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <BinaFilter onFilterChange={handleFilterChange} totalCount={filteredProperties.length} />
+      <BinaFilter 
+        onFilterChange={handleFilterChange} 
+        totalCount={filteredProperties.length}
+        isLoading={isLoading}
+      />
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="mb-6">

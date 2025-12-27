@@ -1,13 +1,12 @@
 "use client"
 import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
+    useQuery,
+    useMutation,
+    useQueryClient,
+    QueryClient,
+    QueryClientProvider,
 } from '@tanstack/react-query'
 
-// Create a client
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
@@ -15,12 +14,12 @@ const queryClient = new QueryClient({
             refetchInterval: false,
             refetchIntervalInBackground: false,
             retry: 1,
-            staleTime: 5 * 60 * 1000, 
+            staleTime: 5 * 60 * 1000,
 
         }
     }
 })
- export default function useQueryProvider({
+export default function useQueryProvider({
     children,
 }: {
     children: React.ReactNode

@@ -5,11 +5,9 @@ export default async function Home() {
   let buildings: any[] = [];
 
   try {
-    // Bazadan məlumatı çəkirik
     buildings = await prisma.building.findMany();
   } catch (error) {
-    console.error("Baza qoşulma xətası:", error);
-    // Xəta olsa, buildings boş array olaraq qalacaq
+    console.error("Prisma qoşulma xətası:", error);
   }
 
   return (

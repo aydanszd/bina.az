@@ -15,7 +15,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="az">
-      {/* Fontları sildik, standart sans-serif istifadə olunacaq */}
       <body className="antialiased font-sans">
         <QueryProvider>
           <MainLayout>
