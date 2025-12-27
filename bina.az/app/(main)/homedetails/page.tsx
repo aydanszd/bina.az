@@ -5,10 +5,9 @@ import PropertyDetail from './view';
 export default async function PropertyDetailPage({
   searchParams
 }: {
-  searchParams: Promise<{ id?: string }>
+  searchParams: { id?: string }
 }) {
-  const params = await searchParams;
-  const propertyId = params?.id;
+  const propertyId = searchParams?.id;
 
   if (!propertyId) {
     notFound();
