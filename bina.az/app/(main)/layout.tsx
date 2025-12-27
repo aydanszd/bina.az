@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "../globals.css";
 import QueryProvider from "../Provider/UseQuery";
-import MainLayout from "../Layout/RootLayout"
+import MainLayout from "../Layout/RootLayout";
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: "Bina.az Clone",
@@ -21,6 +22,7 @@ export default function RootLayout({
             {children}
           </MainLayout>
         </QueryProvider>
+        <Toaster />
       </body>
     </html>
   );

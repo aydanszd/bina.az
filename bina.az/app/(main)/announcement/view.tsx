@@ -8,6 +8,7 @@ import {
     Building2,
     Home,
 } from "lucide-react";
+import { toast } from "sonner";
 import { FormData, Errors, ImageFile } from '../../types/announcement';
 import { validateField, validateAllFields } from '../../utils/validation';
 
@@ -74,17 +75,17 @@ export default function NewItem() {
         const validUrls = imageUrls.filter(url => url.trim() !== '');
 
         if (validUrls.length < 3) {
-            alert('Minimum 3 şəkil URL-i daxil edin!');
+            toast.error('Minimum 3 şəkil URL-i daxil edin!');
             return;
         }
 
         if (!formData.price || !formData.name || !formData.email || !formData.phone) {
-            alert('Zəhmət olmasa bütün məcburi sahələri doldurun!');
+            toast.error('Zəhmət olmasa bütün məcburi sahələri doldurun!');
             return;
         }
 
         if (!isValid) {
-            alert('Zəhmət olmasa bütün xətaları düzəldin!');
+            toast.error('Zəhmət olmasa bütün xətaları düzəldin!');
             return;
         }
 
@@ -124,7 +125,7 @@ export default function NewItem() {
             const result = await response.json();
 
             console.log('Uğurla əlavə olundu:', result);
-            alert('Elan uğurla əlavə olundu!');
+            toast.success('Elan uğurla əlavə olundu!');
 
             setFormData({
                 type: "Alış",
@@ -149,7 +150,7 @@ export default function NewItem() {
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = error instanceof Error ? error.message : 'Naməlum xəta';
-            alert('Xəta baş verdi: ' + errorMessage);
+            toast.error('Xəta baş verdi: ' + errorMessage);
         } finally {
             setLoading(false);
         }

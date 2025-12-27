@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import PropertyGrid from "@/app/Sections/Home/Building";
 
+
 export default async function Home() {
   let buildings: any[] = [];
 
