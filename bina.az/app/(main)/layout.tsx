@@ -5,7 +5,7 @@ import MainLayout from "../Layout/RootLayout";
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
-  title: "Bina.az Clone",
+  title: "Bina.az",
   description: "Daşınmaz əmlak saytı",
 };
 

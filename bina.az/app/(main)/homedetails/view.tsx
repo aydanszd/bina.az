@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import {
-  MapPin, Eye, Clock, Calendar,
+  MapPin, Clock, Calendar,
   Home, Hash, Layers, Users, Phone,
   Percent, CircleDollarSign, ChevronDown, Heart
 } from 'lucide-react';

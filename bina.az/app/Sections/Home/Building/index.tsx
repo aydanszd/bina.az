@@ -20,7 +20,7 @@ const fetchProperties = async (endpoint: string): Promise<Property[]> => {
   return response.json();
 };
 
-const PropertyCard = ({ property }: PropertyCardProps) => {
+const PropertyCard = ({ property }: PropertyCardProps) => {//Data varsa Property[] qaytarır
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleCardClick = () => {
@@ -166,7 +166,7 @@ const BinaFilter = ({ onFilterChange, totalCount, isLoading }: BinaFilterProps) 
               </button>
               {showTypeDropdown && (
                 <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-37.5">
-                  {TRANSACTION_TYPES.map(type => (
+                  {TRANSACTION_TYPES.map(type => (//Array-i loop edir,Hər element üçün JSX yaradır
                     <button
                       key={type.value}
                       onClick={() => { setSelectedType(type.value); setShowTypeDropdown(false); }}
