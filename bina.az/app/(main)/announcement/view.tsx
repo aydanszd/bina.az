@@ -1,5 +1,6 @@
 "use client";
-import { useState, ChangeEvent } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import {
     Key,
     Calendar,
@@ -9,7 +10,7 @@ import {
     Home,
 } from "lucide-react";
 import { toast } from "sonner";
-import { FormData, Errors, ImageFile } from '../../types/announcement';
+import { FormData, Errors } from '../../types/announcement';
 import { validateField, validateAllFields } from '../../utils/validation';
 
 export default function NewItem() {
@@ -32,7 +33,6 @@ export default function NewItem() {
         isNew: false
     });
     const [errors, setErrors] = useState<Errors>({});
-    const [images, setImages] = useState<ImageFile[]>([]);
     const [imageUrls, setImageUrls] = useState<string[]>(['', '', '']);
 
     const nextStep = (data: Partial<FormData>) => {
@@ -41,20 +41,6 @@ export default function NewItem() {
     };
 
     const cities = ["Bakı", "Naxçıvan", "Gəncə", "Xaçmaz", "Qəbələ", "Quba", "Qusar", "Şəmkir"];
-
-    const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files ? Array.from(e.target.files) : [];
-        const newImages: ImageFile[] = files.map(file => ({
-            file,
-            preview: URL.createObjectURL(file),
-            id: Math.random().toString(36).substr(2, 9)
-        }));
-        setImages(prev => [...prev, ...newImages].slice(0, 30));
-    };
-
-    const removeImage = (id: string) => {
-        setImages(prev => prev.filter(img => img.id !== id));
-    };
 
     const handleFieldValidation = (field: keyof FormData, value: string) => {
         const result = validateField(field, value, formData, errors);
@@ -143,7 +129,6 @@ export default function NewItem() {
                 phone: "",
                 isNew: false
             });
-            setImages([]);
             setImageUrls(['', '', '']);
             setErrors({});
             setStep(1);
@@ -334,19 +319,25 @@ export default function NewItem() {
                                         />
                                         {url && (
                                             <div className="mt-2 rounded-xl overflow-hidden border-2 border-gray-200">
-                                                <img
-                                                    src={url}
-                                                    alt={`Preview ${index + 1}`}
-                                                    className="w-full h-48 object-cover"
-                                                    onError={(e) => {
-                                                        const target = e.currentTarget;
-                                                        target.style.display = 'none';
-                                                        const nextEl = target.nextElementSibling;
-                                                        if (nextEl && nextEl instanceof HTMLElement) {
-                                                            nextEl.style.display = 'flex';
-                                                        }
-                                                    }}
-                                                />
+                                                <div className="relative w-full h-48">
+                                                    <Image
+                                                        src={url}
+                                                        alt={`Preview ${index + 1}`}
+                                                        fill
+                                                        className="object-cover"
+                                                        onError={(e) => {
+                                                            const target = e.currentTarget;
+                                                            target.style.display = 'none';
+                                                            const parent = target.parentElement;
+                                                            if (parent) {
+                                                                const errorDiv = parent.nextElementSibling;
+                                                                if (errorDiv && errorDiv instanceof HTMLElement) {
+                                                                    errorDiv.style.display = 'flex';
+                                                                }
+                                                            }
+                                                        }}
+                                                    />
+                                                </div>
                                                 <div className="hidden items-center justify-center h-48 bg-red-50 text-red-500 text-sm">
                                                     URL səhvdir və ya şəkil yüklənə bilmir
                                                 </div>

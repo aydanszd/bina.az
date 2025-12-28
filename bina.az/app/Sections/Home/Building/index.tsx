@@ -1,5 +1,6 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { Heart, MapPin, Bed, Maximize, Calendar, ChevronDown, SlidersHorizontal, Building2, Home, X, Search } from 'lucide-react';
 import type { 
@@ -20,7 +21,7 @@ const fetchProperties = async (endpoint: string): Promise<Property[]> => {
   return response.json();
 };
 
-const PropertyCard = ({ property }: PropertyCardProps) => {//Data varsa Property[] qaytarır
+const PropertyCard = ({ property }: PropertyCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const handleCardClick = () => {
@@ -38,10 +39,12 @@ const PropertyCard = ({ property }: PropertyCardProps) => {//Data varsa Property
       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer"
     >
       <div className="relative h-56 overflow-hidden group">
-        <img
+        <Image
           src={property.image1 || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500'}
           alt={property.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          fill
+          className="object-cover group-hover:scale-110 transition-transform duration-300"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
         />
         <button
           onClick={handleFavoriteClick}
@@ -166,7 +169,7 @@ const BinaFilter = ({ onFilterChange, totalCount, isLoading }: BinaFilterProps) 
               </button>
               {showTypeDropdown && (
                 <div className="absolute top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-37.5">
-                  {TRANSACTION_TYPES.map(type => (//Array-i loop edir,Hər element üçün JSX yaradır
+                  {TRANSACTION_TYPES.map(type => (
                     <button
                       key={type.value}
                       onClick={() => { setSelectedType(type.value); setShowTypeDropdown(false); }}
@@ -510,17 +513,13 @@ const PropertyGrid = ({ properties: initialProperties, apiEndpoint }: PropertyGr
     enabled: !!apiEndpoint,
   });
 
-  const properties = apiEndpoint ? (fetchedProperties || []) : (initialProperties || []);
+  // Memoize properties to prevent unnecessary re-renders
+  const properties = useMemo(() => {
+    return apiEndpoint ? (fetchedProperties || []) : (initialProperties || []);
+  }, [apiEndpoint, fetchedProperties, initialProperties]);
 
-  useEffect(() => {
-    setFilteredProperties(properties);
-  }, [properties]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters, properties]);
-
-  const applyFilters = () => {
+  // Move applyFilters before useEffect to fix declaration order
+  const applyFilters = useCallback(() => {
     let filtered = [...properties];
 
     if (filters.type) {
@@ -630,7 +629,15 @@ const PropertyGrid = ({ properties: initialProperties, apiEndpoint }: PropertyGr
     }
 
     setFilteredProperties(filtered);
-  };
+  }, [properties, filters]);
+
+  useEffect(() => {
+    setFilteredProperties(properties);
+  }, [properties]);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);

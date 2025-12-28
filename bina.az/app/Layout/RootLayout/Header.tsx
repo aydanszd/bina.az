@@ -1,5 +1,7 @@
 "use client"
 import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, Heart, User } from 'lucide-react';
 
 export default function BinaNavbar() {
@@ -17,33 +19,35 @@ export default function BinaNavbar() {
                             <Menu className="w-6 h-6 text-[#946952]" />
                         </button>
 
-                        <a href="/" className="text-[20px] font-bold text-[#946952]">
+                        <Link href="/" className="text-[20px] font-bold text-[#946952]">
                             BİNA.AZ
-                        </a>
+                        </Link>
                     </div>
                     <div className="hidden md:flex text-[15px] items-center gap-6 mr-50">
-                        <a href="#" className="text-black hover:text-[#946952] transition-colors">
+                        <Link href="#" className="text-black hover:text-[#946952] transition-colors">
                             Alqi-satqi
-                        </a>
-                        <a href="#" className="text-black hover:text-[#946952] transition-colors">
+                        </Link>
+                        <Link href="#" className="text-black hover:text-[#946952] transition-colors">
                             Kiraye
-                        </a>
-                        <a href="#" className="text-black hover:text-[#946952] transition-colors">
+                        </Link>
+                        <Link href="#" className="text-black hover:text-[#946952] transition-colors">
                             Günlük
-                        </a>
-                        <a href="#" className="text-black hover:text-[#946952] transition-colors">
+                        </Link>
+                        <Link href="#" className="text-black hover:text-[#946952] transition-colors">
                             Agentliklər
-                        </a>
-                        <a href="#" className="text-black hover:text-[#946952] transition-colors">
+                        </Link>
+                        <Link href="#" className="text-black hover:text-[#946952] transition-colors">
                             Yaşayış kompleksləri
-                        </a>
-                        <a href="#" className="hover:opacity-80 transition-opacity">
-                            <img
+                        </Link>
+                        <Link href="#" className="hover:opacity-80 transition-opacity">
+                            <Image
                                 src="https://brightgroup.az/wp-content/uploads/2025/04/Pasha_Holding_logo-1.png"
                                 alt="PASHA Holding"
+                                width={96}
+                                height={24}
                                 className="h-6 w-auto object-contain"
                             />
-                        </a>
+                        </Link>
                     </div>
                     <div className="flex items-center gap-3">
                         <button className="hidden sm:block px-3 py-1 text-[18px] cursor-pointer text-black hover:text-[#946952] rounded transition-colors">
@@ -54,10 +58,10 @@ export default function BinaNavbar() {
                             <Heart className="w-6 h-6 hover:text-[#946952]  text-black" />
                         </button>
 
-                        <a href="/announcement" className="hidden sm:flex cursor-pointer items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[13px] hover:bg-green-800 transition-colors">
+                        <Link href="/announcement" className="hidden sm:flex cursor-pointer items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[13px] hover:bg-green-800 transition-colors">
                             <span className="text-xl">+</span>
                             <span>Yeni elan</span>
-                        </a>
+                        </Link>
 
                         <button className="p-2 cursor-pointer rounded-lg transition-colors">
                             <User className="w-6 h-6 text-black" />
@@ -68,28 +72,30 @@ export default function BinaNavbar() {
             {isMenuOpen && (
                 <div className="md:hidden border-t border-gray-200 bg-white">
                     <div className="px-4 py-2 space-y-2">
-                        <a href="#" className="block py-2 text-gray-700 hover:text-orange-600">
+                        <Link href="#" className="block py-2 text-gray-700 hover:text-orange-600">
                             Alqi-satqi
-                        </a>
-                        <a href="#" className="block py-2 text-gray-700 hover:text-orange-600">
+                        </Link>
+                        <Link href="#" className="block py-2 text-gray-700 hover:text-orange-600">
                             Kiraye
-                        </a>
-                        <a href="#" className="block py-2 text-gray-700 hover:text-orange-600">
+                        </Link>
+                        <Link href="#" className="block py-2 text-gray-700 hover:text-orange-600">
                             Günlük
-                        </a>
-                        <a href="#" className="block py-2 text-gray-700 hover:text-orange-600">
+                        </Link>
+                        <Link href="#" className="block py-2 text-gray-700 hover:text-orange-600">
                             Agentliklər
-                        </a>
-                        <a href="#" className="block py-2 text-gray-700 hover:text-orange-600">
+                        </Link>
+                        <Link href="#" className="block py-2 text-gray-700 hover:text-orange-600">
                             Yaşayış kompleksləri
-                        </a>
-                        <a href="#" className="block py-2 hover:opacity-80 transition-opacity">
-                            <img
+                        </Link>
+                        <Link href="#" className="block py-2 hover:opacity-80 transition-opacity">
+                            <Image
                                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/PH_aze.jpg/1200px-PH_aze.jpg"
                                 alt="PASHA Holding"
+                                width={128}
+                                height={32}
                                 className="h-8 w-auto object-contain"
                             />
-                        </a>
+                        </Link>
                     </div>
                 </div>
             )}

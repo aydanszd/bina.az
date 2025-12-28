@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import Image from 'next/image';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import {
   MapPin, Clock, Calendar,
@@ -15,17 +16,15 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import 'react-photo-view/dist/react-photo-view.css';
-import type { PropertyDetailProps, StaticPlan, StaticParameter, Listing } from '@/app/types/homedetail';
+import type { PropertyDetailProps, StaticPlan, StaticParameter } from '@/app/types/homedetail';
 
 const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProperties = [] }) => {
   const [showNumber, setShowNumber] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 3;
-  const totalPages = Math.ceil((relatedProperties?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentListings = relatedProperties?.slice(startIndex, endIndex) || [];
   const images = [property.image1, property.image2, property.image3]
     .filter((img): img is string => Boolean(img));
 
@@ -49,6 +48,41 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
 
   const staticAboutExtra = `Yeni layihəmiz Həsən Əliyev və Cəlil Məmmədquluzadə küçələrinin kəsişməsində yerləşən "Eleven Park" layihəsidir. "Eleven Park" sizlərə 1, 2, 3 və 4 otaqlı mənzillər təklif edir.`;
 
+  const staticListings = [
+    {
+      id: 1,
+      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400',
+      price: '148 470 AZN',
+      address: '8 Noyabr m.',
+      details: '1 otaqlı • 50,5 m² • 6/16 mərtəbə',
+      date: 'Bakı, bugün 11:25',
+      isNew: true,
+      isVip: true
+    },
+    {
+      id: 2,
+      image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400',
+      price: '265 221 AZN',
+      address: '8 Noyabr m.',
+      details: '2 otaqlı • 89,3 m² • 7/16 mərtəbə',
+      date: 'Bakı, bugün 11:25',
+      isNew: false,
+      isVip: true
+    },
+    {
+      id: 3,
+      image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400',
+      price: '247 723 AZN',
+      address: '8 Noyabr m.',
+      details: '2 otaqlı • 82,3 m² • 10/16 mərtəbə',
+      date: 'Bakı, bugün 11:24',
+      isNew: true,
+      isVip: true
+    }
+  ];
+
+  const currentListings = staticListings.slice(startIndex, endIndex);
+
   return (
     <div className="min-h-screen mt-18 bg-white text-[#212326] antialiased max-w-7xl mx-auto">
       <div className="max-w-350 mx-auto px-4 py-4 flex justify-between items-center text-[13px]">
@@ -67,10 +101,12 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
               <>
                 <div className="col-span-2 relative rounded-l-lg overflow-hidden group h-110">
                   <PhotoView src={images[0]}>
-                    <img
+                    <Image
                       src={images[0]}
-                      className="w-full h-full object-cover cursor-pointer transition-transform duration-500 group-hover:scale-105"
                       alt="Main"
+                      fill
+                      className="object-cover cursor-pointer transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 66vw"
                     />
                   </PhotoView>
                   <div className="absolute top-4 left-4 flex gap-2 z-10">
@@ -94,12 +130,14 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                 </div>
                 <div className="col-span-1 flex flex-col gap-2 h-110">
                   {images[1] ? (
-                    <div className="flex-1 rounded-tr-lg overflow-hidden group">
+                    <div className="flex-1 rounded-tr-lg overflow-hidden group relative">
                       <PhotoView src={images[1]}>
-                        <img
+                        <Image
                           src={images[1]}
-                          className="w-full h-full object-cover cursor-pointer transition-opacity group-hover:opacity-90"
                           alt="Side 1"
+                          fill
+                          className="object-cover cursor-pointer transition-opacity group-hover:opacity-90"
+                          sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </PhotoView>
                     </div>
@@ -111,10 +149,12 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                   {images[2] ? (
                     <div className="flex-1 relative rounded-br-lg overflow-hidden group">
                       <PhotoView src={images[2]}>
-                        <img
+                        <Image
                           src={images[2]}
-                          className="w-full h-full object-cover cursor-pointer transition-opacity group-hover:opacity-90"
                           alt="Side 2"
+                          fill
+                          className="object-cover cursor-pointer transition-opacity group-hover:opacity-90"
+                          sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       </PhotoView>
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none group-hover:bg-black/30 transition-colors">
@@ -260,59 +300,30 @@ const PropertyDetail: React.FC<PropertyDetailProps> = ({ property, relatedProper
                 <div className="text-[13px] text-[#8d94ad] mb-6">Elan sayı: 16</div>
 
                 <div className="grid grid-cols-3 gap-4 mb-8">
-                  {[
-                    {
-                      id: 1,
-                      image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400',
-                      price: '148 470 AZN',
-                      address: '8 Noyabr m.',
-                      details: '1 otaqlı • 50,5 m² • 6/16 mərtəbə',
-                      date: 'Bakı, bugün 11:25',
-                      isNew: true,
-                      isVip: true
-                    },
-                    {
-                      id: 2,
-                      image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400',
-                      price: '265 221 AZN',
-                      address: '8 Noyabr m.',
-                      details: '2 otaqlı • 89,3 m² • 7/16 mərtəbə',
-                      date: 'Bakı, bugün 11:25',
-                      isNew: false,
-                      isVip: true
-                    },
-                    {
-                      id: 3,
-                      image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400',
-                      price: '247 723 AZN',
-                      address: '8 Noyabr m.',
-                      details: '2 otaqlı • 82,3 m² • 10/16 mərtəbə',
-                      date: 'Bakı, bugün 11:24',
-                      isNew: true,
-                      isVip: true
-                    }
-                  ].slice(startIndex, endIndex).map((listing) => (
+                  {currentListings.map((listing) => (
                     <div key={listing.id} className="bg-white rounded-lg border border-[#ebeef5] overflow-hidden hover:shadow-lg transition-shadow group">
                       <div className="relative h-45 overflow-hidden">
-                        <img
+                        <Image
                           src={listing.image}
                           alt={listing.address}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, 33vw"
                         />
                         {listing.isNew && (
-                          <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded text-[10px] font-bold">
+                          <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded text-[10px] font-bold z-10">
                             YENİ
                           </div>
                         )}
                         {listing.isVip && (
-                          <div className="absolute top-2 right-2 bg-yellow-400 text-white px-2 py-1 rounded text-[10px] font-bold">
+                          <div className="absolute top-2 right-2 bg-yellow-400 text-white px-2 py-1 rounded text-[10px] font-bold z-10">
                             VIP
                           </div>
                         )}
-                        <button className="absolute top-2 right-2 bg-white/90 p-1.5 rounded-full hover:bg-white transition-colors">
+                        <button className="absolute top-2 right-2 bg-white/90 p-1.5 rounded-full hover:bg-white transition-colors z-10">
                           <Heart size={16} className="text-gray-600" />
                         </button>
-                        <div className="absolute bottom-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold">
+                        <div className="absolute bottom-2 left-2 bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-bold z-10">
                           Kompleks
                         </div>
                       </div>

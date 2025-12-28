@@ -5,9 +5,10 @@ import PropertyDetail from './view';
 export default async function PropertyDetailPage({
   searchParams
 }: {
-  searchParams: { id?: string }
+  searchParams?: Promise<{ id?: string }>
 }) {
-  const propertyId = searchParams?.id;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const propertyId = resolvedSearchParams?.id;
 
   if (!propertyId) {
     notFound();
@@ -37,9 +38,9 @@ export default async function PropertyDetailPage({
   });
 
   return (
-    <PropertyDetail 
-      property={property} 
-      relatedProperties={relatedProperties || []} 
+    <PropertyDetail
+      property={property}
+      relatedProperties={relatedProperties || []}
     />
   );
 }
