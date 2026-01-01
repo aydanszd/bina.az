@@ -1,13 +1,15 @@
 export interface Property {
-    id: string | number;
-    image1?: string;
+    image2: any;
+    image3: any;
+    id: string;
     title: string;
-    price?: number;
+    price: number | string;
+    location: string;
     rooms?: number | string;
     area?: number | string;
     floor?: number | string;
-    location: string;
-    createdAt: string | Date;
+    image1?: string;
+    createdAt: string;
     type?: string;
     property?: string;
     isNew?: boolean | string;
@@ -32,7 +34,7 @@ export interface FilterState {
 export interface BinaFilterProps {
     onFilterChange: (filters: FilterState) => void;
     totalCount: number;
-    isLoading?: boolean;
+    isLoading: boolean;
 }
 
 export interface PropertyGridProps {

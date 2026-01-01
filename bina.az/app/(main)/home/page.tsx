@@ -1,8 +1,8 @@
-import ViewHomePage from './view';
+import { PropertyGrid } from '@/features/property/PropertyGrid';
 export default function HomePage() {
     return (
         <div>
-            <ViewHomePage />
+            <PropertyGrid />
         </div>
     );
 }

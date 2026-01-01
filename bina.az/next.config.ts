@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'media.istockphoto.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'bina.azstatic.com',  // ← BUNU ƏLAVƏ ET
+      },
     ],
   },
 };

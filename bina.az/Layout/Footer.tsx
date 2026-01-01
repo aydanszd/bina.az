@@ -8,7 +8,7 @@ import {
     FOOTER_LINKS,
     SOCIAL_LINKS,
     COMPANY_INFO
-} from '@/app/constants/footer';
+} from '@/constants/footer';
 
 const Footer = () => {
     return (
@@ -35,7 +35,6 @@ const Footer = () => {
                             </a>
                         </div>
                     </div>
-
                     <div className="mt-8 md:mt-0 flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                         <div className="bg-gray-50 p-2 rounded-lg">
                             <QrCode size={40} strokeWidth={1.5} className="text-gray-700" />
@@ -51,7 +50,6 @@ const Footer = () => {
                         </div>
                     </div>
                 </div>
-
                 <div className="space-y-10">
                     <section>
                         <h4 className="text-gray-400 font-semibold mb-5 uppercase tracking-[1px] text-[11px]">
@@ -69,7 +67,6 @@ const Footer = () => {
                             ))}
                         </div>
                     </section>
-
                     <section>
                         <h4 className="text-gray-400 font-semibold mb-5 uppercase tracking-[1px] text-[11px]">
                             Bütün Azərbaycan
@@ -87,7 +84,6 @@ const Footer = () => {
                         </div>
                     </section>
                 </div>
-
                 <div className="mt-12 pt-8 border-t border-gray-200">
                     <div className="flex flex-wrap gap-x-6 gap-y-3 mb-8 text-gray-600 font-medium">
                         {FOOTER_LINKS.map((link) => (
@@ -100,13 +96,11 @@ const Footer = () => {
                             </Link>
                         ))}
                     </div>
-
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-gray-400 text-[12px]">
                         <div className="space-y-1 text-center md:text-left max-w-2xl">
                             <p>{COMPANY_INFO.disclaimer}</p>
                             <p>{COMPANY_INFO.copyright}</p>
                         </div>
-
                         <div className="flex items-center gap-8">
                             <div className="flex gap-5">
                                 {SOCIAL_LINKS.map((social) => (

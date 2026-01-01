@@ -1,21 +1,18 @@
 export interface Property {
     id: string;
     title: string;
-    description?: string | null;
+    price: number | string;
     location: string;
-    floor?: number | null;
-    area?: number | null;
-    price?: number | null;
-    type: string;
-    property: string;
-    isNew: boolean;
-    rooms?: number | null;
-    image1?: string | null;
-    image2?: string | null;
-    image3?: string | null;
-    createdAt: Date;
-    updatedAt: Date;
-    views?: number;
+    rooms?: number | string;
+    area?: number | string;
+    floor?: number | string;
+    image1?: string;
+    image2?: string;  
+    image3?: string; 
+    createdAt: string;
+    type?: string;
+    property?: string;
+    isNew?: boolean | string;
 }
 
 export interface PropertyDetailProps {

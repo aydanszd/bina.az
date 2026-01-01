@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import QueryProvider from "../Provider/UseQuery";
-import MainLayout from "../Layout/RootLayout";
+import QueryProvider from "../../Provider/UseQuery";
+import MainLayout from "../../Layout";
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {

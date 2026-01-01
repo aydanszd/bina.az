@@ -1,8 +1,4 @@
-import AnnouncePage from './view';
-export default function HomePage() {
-    return (
-        <div>
-            <AnnouncePage />
-        </div>
-    );
+import AnnouncementForm from "@/features/announcements/AnnouncementForm";
+export default function AnnouncementPage() {
+    return <AnnouncementForm />;
 }

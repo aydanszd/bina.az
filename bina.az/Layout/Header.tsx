@@ -6,7 +6,6 @@ import { Menu, Heart, User } from 'lucide-react';
 
 export default function BinaNavbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-
     return (
         <nav className="fixed top-0 left-0 right-0 bg-white z-50">
             <div className="max-w-7xl mx-auto px-4">
@@ -18,7 +17,6 @@ export default function BinaNavbar() {
                         >
                             <Menu className="w-6 h-6 text-[#946952]" />
                         </button>
-
                         <Link href="/" className="text-[20px] font-bold text-[#946952]">
                             BİNA.AZ
                         </Link>
@@ -53,16 +51,13 @@ export default function BinaNavbar() {
                         <button className="hidden sm:block px-3 py-1 text-[18px] cursor-pointer text-black hover:text-[#946952] rounded transition-colors">
                             RU
                         </button>
-
                         <button className="p-2 cursor-pointer rounded-lg transition-colors">
                             <Heart className="w-6 h-6 hover:text-[#946952]  text-black" />
                         </button>
-
-                       <Link href="/announcement" className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[13px] hover:bg-green-800 transition-colors">
+                        <Link href="/announcement" className="flex cursor-pointer items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-[13px] hover:bg-green-800 transition-colors">
                             <span className="text-xl">+</span>
                             <span>Yeni elan</span>
                         </Link>
-
                         <button className="p-2 cursor-pointer rounded-lg transition-colors">
                             <User className="w-6 h-6 text-black" />
                         </button>
