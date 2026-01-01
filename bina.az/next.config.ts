@@ -44,7 +44,6 @@ const nextConfig: NextConfig = {
         hostname: '**.imgur.com',
       },
     ],
-    // Minimize timeout issues
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: true,
   },

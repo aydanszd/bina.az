@@ -1,8 +1,8 @@
 'use server'
-
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
-
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
 export type AnnouncementFormState = {
     message?: string
     success?: boolean
@@ -10,7 +10,6 @@ export type AnnouncementFormState = {
         [key: string]: string[]
     }
 }
-
 const AnnouncementSchema = z.object({
     type: z.enum(['Alış', 'Kiraye']),
     property: z.string().min(1, 'Əmlak növü tələb olunur'),
@@ -34,7 +33,6 @@ export async function createAnnouncement(
     prevState: AnnouncementFormState,
     formData: FormData
 ): Promise<AnnouncementFormState> {
-    // Convert FormData to object
     const rawFormData = {
         type: formData.get('type'),
         property: formData.get('property'),
@@ -54,7 +52,6 @@ export async function createAnnouncement(
         phone: formData.get('phone'),
     }
 
-    // Validate form data
     const validatedFields = AnnouncementSchema.safeParse(rawFormData)
 
     if (!validatedFields.success) {
@@ -65,39 +62,26 @@ export async function createAnnouncement(
     }
 
     try {
-        const buildingData = {
-            title: `${validatedFields.data.property} - ${validatedFields.data.city}`,
-            description: validatedFields.data.description || null,
-            location: validatedFields.data.city,
-            floor: parseInt(validatedFields.data.floor),
-            area: parseFloat(validatedFields.data.area),
-            price: parseFloat(validatedFields.data.price),
-            type: validatedFields.data.type,
-            property: validatedFields.data.property,
-            isNew: validatedFields.data.isNew === 'true',
-            rooms: parseInt(validatedFields.data.rooms),
-            image1: validatedFields.data.image1,
-            image2: validatedFields.data.image2,
-            image3: validatedFields.data.image3,
-        }
-
-        console.log('Bazaya yazılır...', buildingData)
-
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/buildings`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+        const data = validatedFields.data
+        const building = await prisma.building.create({
+            data: {
+                title: `${data.property} - ${data.city}`,
+                description: data.description || null,
+                location: data.city,
+                floor: parseInt(data.floor),
+                area: parseFloat(data.area),
+                price: parseFloat(data.price),
+                type: data.type,
+                property: data.property,
+                isNew: data.isNew === 'true',
+                rooms: parseInt(data.rooms),
+                image1: data.image1,
+                image2: data.image2,
+                image3: data.image3,
             },
-            body: JSON.stringify(buildingData),
         })
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null)
-            throw new Error(errorData?.message || 'Bazaya yazıla bilmədi')
-        }
-
-        const result = await response.json()
-        console.log('Uğurla əlavə olundu:', result)
+        console.log('Uğurla əlavə olundu:', building)
 
         revalidatePath('/')
         revalidatePath('/buildings')
@@ -107,7 +91,7 @@ export async function createAnnouncement(
             success: true,
         }
     } catch (error) {
-        console.error('Error:', error)
+        console.error('Database error:', error)
         const errorMessage = error instanceof Error ? error.message : 'Naməlum xəta'
         return {
             message: 'Xəta baş verdi: ' + errorMessage,
