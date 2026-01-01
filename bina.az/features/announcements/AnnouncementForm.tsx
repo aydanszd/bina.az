@@ -191,6 +191,7 @@ export default function AnnouncementForm() {
                             {state.message}
                         </div>
                     )}
+
                     <div className="space-y-4">
                         <label className="block text-sm font-bold text-gray-700">Şəhər *</label>
                         <select
@@ -264,6 +265,7 @@ export default function AnnouncementForm() {
                             </div>
                         </div>
                     </div>
+
                     <div className="space-y-4">
                         <h3 className="text-lg font-bold text-[#412e27]">Şəkil URL-ləri *</h3>
                         <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
@@ -289,11 +291,12 @@ export default function AnnouncementForm() {
                                     />
                                     {url && (
                                         <div className="mt-2 rounded-xl overflow-hidden border-2 border-gray-200">
-                                            <div className="relative w-full h-48">
+                                            <div className="relative w-full h-48 bg-gray-100">
                                                 <Image
                                                     src={url}
                                                     alt={`Preview ${index + 1}`}
                                                     fill
+                                                    unoptimized={true}
                                                     className="object-cover"
                                                     onError={(e) => {
                                                         const target = e.currentTarget;

@@ -29,9 +29,24 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'bina.azstatic.com',  // ← BUNU ƏLAVƏ ET
+        hostname: 'bina.azstatic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.imgur.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.imgur.com',
       },
     ],
+    // Minimize timeout issues
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
   },
 };
 
