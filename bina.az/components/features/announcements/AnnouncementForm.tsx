@@ -64,7 +64,7 @@ export default function AnnouncementForm() {
         setValue,
         trigger,
         reset,
-        control // control əlavə edin
+        control 
     } = useForm<FormData>({
         resolver: zodResolver(FormSchema),
         mode: 'onBlur',
