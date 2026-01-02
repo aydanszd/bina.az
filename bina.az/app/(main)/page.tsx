@@ -1,4 +1,4 @@
-import { PropertyGrid } from "@/features/property/PropertyGrid";
+import { PropertyGrid } from "@/components/features/property/PropertyGrid";
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query';
 import { Property } from "@/types/homepage";
 import { prisma } from "@/lib/prisma";
