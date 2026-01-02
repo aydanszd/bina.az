@@ -1,23 +1,15 @@
 'use server'
-import { z } from 'zod'
-import { revalidatePath } from 'next/cache'
-import { PrismaClient, Prisma } from '@prisma/client'
+import { z } from 'zod' 
+import { revalidatePath } from 'next/cache' 
+import { PrismaClient } from '@prisma/client' 
 
-const globalForPrisma = globalThis as unknown as {
-    prisma: PrismaClient | undefined
-}
-
-const prisma = globalForPrisma.prisma ?? new PrismaClient()
-
-if (process.env.NODE_ENV !== 'production') {
-    globalForPrisma.prisma = prisma
-}
+const prisma = new PrismaClient()
 
 export type AnnouncementFormState = {
-    message?: string
+    message?: string 
     success?: boolean
     errors?: {
-        [key: string]: string[]
+        [key: string]: string[] 
     }
 }
 const AnnouncementSchema = z.object({
@@ -26,33 +18,35 @@ const AnnouncementSchema = z.object({
     ownerType: z.enum(['owner', 'agent']),
     isNew: z.string(),
     city: z.string().min(1, 'Şəhər tələb olunur'),
-    rooms: z.string().min(1, 'Otaq sayı tələb olunur')
+    rooms: z.string()
+        .min(1, 'Otaq sayı tələb olunur')
         .refine(val => !isNaN(Number(val)) && Number(val) > 0, 'Otaq sayı müsbət ədəd olmalıdır'),
-    area: z.string().min(1, 'Sahə tələb olunur')
+    area: z.string()
+        .min(1, 'Sahə tələb olunur')
         .refine(val => !isNaN(Number(val)) && Number(val) > 0, 'Sahə müsbət ədəd olmalıdır'),
-    floor: z.string().min(1, 'Mərtəbə tələb olunur')
+    floor: z.string()
+        .min(1, 'Mərtəbə tələb olunur')
         .refine(val => !isNaN(Number(val)), 'Mərtəbə ədəd olmalıdır'),
     image1: z.string().url('Düzgün URL daxil edin').min(1, 'Şəkil 1 tələb olunur'),
     image2: z.string().url('Düzgün URL daxil edin').min(1, 'Şəkil 2 tələb olunur'),
     image3: z.string().url('Düzgün URL daxil edin').min(1, 'Şəkil 3 tələb olunur'),
     description: z.string().max(3000, 'Təsvir 3000 simvoldan çox ola bilməz').optional(),
-    price: z.string().min(1, 'Qiymət tələb olunur')
+    price: z.string()
+        .min(1, 'Qiymət tələb olunur')
         .refine(val => !isNaN(Number(val)) && Number(val) > 0, 'Qiymət müsbət ədəd olmalıdır'),
     name: z.string().min(2, 'Ad ən azı 2 simvol olmalıdır').max(100, 'Ad çox uzundur'),
     email: z.string().email('Düzgün e-mail daxil edin').min(1, 'E-mail tələb olunur'),
-    phone: z.string().min(9, 'Telefon nömrəsi ən azı 9 rəqəm olmalıdır')
-        .max(15, 'Telefon nömrəsi çox uzundur'),
+    phone: z.string().min(9, 'Telefon nömrəsi ən azı 9 rəqəm olmalıdır').max(15, 'Telefon nömrəsi çox uzundur'),
 })
 
 export async function createAnnouncement(
-    prevState: AnnouncementFormState,
-    formData: FormData
-): Promise<AnnouncementFormState> {
+    prevState: AnnouncementFormState, 
+    formData: FormData 
+): Promise<AnnouncementFormState> { 
 
     const rawFormData = Object.fromEntries(formData.entries())
-
     const validatedFields = AnnouncementSchema.safeParse(rawFormData)
-
+    
     if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
@@ -63,67 +57,33 @@ export async function createAnnouncement(
 
     try {
         const data = validatedFields.data
-
-        const parsedData = {
-            title: `${data.property} - ${data.city}`,
-            description: data.description || null,
-            location: data.city,
-            floor: parseInt(data.floor, 10),
-            area: parseFloat(data.area),
-            price: parseFloat(data.price),
-            type: data.type,
-            property: data.property,
-            isNew: data.isNew === 'true',
-            rooms: parseInt(data.rooms, 10),
-            image1: data.image1,
-            image2: data.image2,
-            image3: data.image3,
-        }
-
-        const building = await prisma.building.create({
-            data: parsedData,
+        
+        await prisma.building.create({
+            data: {
+                title: `${data.property} - ${data.city}`,
+                description: data.description || null,
+                location: data.city,
+                floor: parseInt(data.floor, 10),
+                area: parseFloat(data.area),
+                price: parseFloat(data.price),
+                type: data.type,
+                property: data.property,
+                isNew: data.isNew === 'true',
+                rooms: parseInt(data.rooms, 10),
+                image1: data.image1,
+                image2: data.image2,
+                image3: data.image3,
+            }
         })
-
-        revalidatePath('/')
+        
+        revalidatePath('/') 
         revalidatePath('/home')
-
-        console.log('[SUCCESS] Building created:', building.id)
 
         return {
             message: 'Elan uğurla əlavə olundu!',
             success: true,
         }
-
     } catch (error) {
-        console.error('[ERROR] Failed to create building:', error)
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            if (error.code === 'P2002') {
-                return {
-                    message: 'Bu məlumatlar artıq mövcuddur',
-                    success: false,
-                }
-            }
-            if (error.code === 'P2003') {
-                return {
-                    message: 'Əlaqəli məlumat tapılmadı',
-                    success: false,
-                }
-            }
-            if (error.code === 'P2025') {
-                return {
-                    message: 'Məlumat tapılmadı',
-                    success: false,
-                }
-            }
-        }
-
-        if (error instanceof Prisma.PrismaClientValidationError) {
-            return {
-                message: 'Məlumatların formatı düzgün deyil',
-                success: false,
-            }
-        }
-
         return {
             message: 'Xəta baş verdi. Zəhmət olmasa bir az sonra yenidən cəhd edin',
             success: false,

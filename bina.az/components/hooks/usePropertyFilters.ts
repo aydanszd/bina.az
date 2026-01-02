@@ -1,129 +1,135 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 import type { Property, FilterState } from '@/types/homepage';
 
 export function usePropertyFilters(properties: Property[]) {
     const [filters, setFilters] = useState<FilterState>({});
-
-    const filteredProperties = useMemo(() => {
-        let filtered = [...properties];
+    function filterProperties() {
+        let result = [...properties]; 
 
         if (filters.type) {
-            filtered = filtered.filter(p => {
-                const apiType = p.type?.toLowerCase().trim();
-                const filterType = filters.type?.toLowerCase();
+            result = result.filter(property => {
+                const propertyType = property.type?.toLowerCase().trim();
+                const selectedType = filters.type?.toLowerCase();
 
-                if (filterType === 'alış') {
-                    return apiType === 'alış' || apiType === 'alqı-satqı' || apiType === 'alqi-satqi';
+                if (selectedType === 'alış') {
+                    return propertyType === 'alış' ||
+                        propertyType === 'alqı-satqı' ||
+                        propertyType === 'alqi-satqi';
                 }
-                if (filterType === 'kiraye') {
-                    return apiType === 'kiraye' || apiType === 'kirayə';
+
+                if (selectedType === 'kiraye') {
+                    return propertyType === 'kiraye' ||
+                        propertyType === 'kirayə';
                 }
+
                 return true;
             });
         }
-
         if (filters.property) {
-            filtered = filtered.filter(p => {
-                const apiProperty = p.property?.toLowerCase().trim();
-                const filterProperty = filters.property?.toLowerCase();
+            result = result.filter(property => {
+                const propertyName = property.property?.toLowerCase().trim();
+                const selectedProperty = filters.property?.toLowerCase();
+                if (selectedProperty === 'mənzil') {
+                    return propertyName === 'mənzil' || propertyName === 'menzil';
+                }
+                if (selectedProperty === 'həyət evi') {
+                    return propertyName === 'həyət evi' ||
+                        propertyName === 'heyet evi' ||
+                        propertyName === 'bağ evi' ||
+                        propertyName === 'bag evi';
+                }
 
-                if (filterProperty === 'mənzil') {
-                    return apiProperty === 'mənzil' || apiProperty === 'menzil';
+                if (selectedProperty === 'qaraj') {
+                    return propertyName === 'qaraj' || propertyName === 'garaj';
                 }
-                if (filterProperty === 'həyət evi') {
-                    return apiProperty === 'həyət evi' || apiProperty === 'heyet evi' ||
-                        apiProperty === 'bağ evi' || apiProperty === 'bag evi';
-                }
-                if (filterProperty === 'ofis') {
-                    return apiProperty === 'ofis';
-                }
-                if (filterProperty === 'qaraj') {
-                    return apiProperty === 'qaraj' || apiProperty === 'garaj';
-                }
-                if (filterProperty === 'torpaq') {
-                    return apiProperty === 'torpaq';
-                }
-                if (filterProperty === 'obyekt') {
-                    return apiProperty === 'obyekt';
-                }
-                return apiProperty === filterProperty;
+                return propertyName === selectedProperty;
             });
         }
-
         if (filters.rooms) {
-            filtered = filtered.filter(p => {
-                const roomCount = parseInt(String(p.rooms));
-                if (isNaN(roomCount)) return false;
+            result = result.filter(property => {
+                const roomCount = parseInt(String(property.rooms));
+
+                if (isNaN(roomCount)) {
+                    return false;
+                }
 
                 if (filters.rooms === '5+') {
                     return roomCount >= 5;
-                } else {
-                    return roomCount === parseInt(filters.rooms || '0');
                 }
+                return roomCount === parseInt(filters.rooms || '0');
             });
         }
+
         if (filters.priceMin) {
-            filtered = filtered.filter(p => {
-                const price = parseFloat(String(p.price));
+            result = result.filter(property => {
+                const price = parseFloat(String(property.price));
                 return !isNaN(price) && price >= (filters.priceMin || 0);
             });
         }
+
         if (filters.priceMax) {
-            filtered = filtered.filter(p => {
-                const price = parseFloat(String(p.price));
+            result = result.filter(property => {
+                const price = parseFloat(String(property.price));
                 return !isNaN(price) && price <= (filters.priceMax || 0);
             });
         }
+
         if (filters.areaMin) {
-            filtered = filtered.filter(p => {
-                const area = parseFloat(String(p.area));
+            result = result.filter(property => {
+                const area = parseFloat(String(property.area));
                 return !isNaN(area) && area >= (filters.areaMin || 0);
             });
         }
+
         if (filters.areaMax) {
-            filtered = filtered.filter(p => {
-                const area = parseFloat(String(p.area));
+            result = result.filter(property => {
+                const area = parseFloat(String(property.area));
                 return !isNaN(area) && area <= (filters.areaMax || 0);
             });
         }
-        if (filters.locations && filters.locations.length > 0) {
-            filtered = filtered.filter(p => {
-                const locationText = p.location?.toLowerCase().trim() || '';
 
-                return filters.locations!.some(loc => {
-                    const selectedLoc = loc.toLowerCase().trim();
-                    return locationText.includes(selectedLoc) ||
-                        locationText === selectedLoc;
+        if (filters.locations && filters.locations.length > 0) {
+            result = result.filter(property => {
+                const propertyLocation = property.location?.toLowerCase().trim() || '';
+                return filters.locations!.some(selectedLocation => {
+                    const location = selectedLocation.toLowerCase().trim();
+                    return propertyLocation.includes(location) ||
+                        propertyLocation === location;
                 });
             });
         }
         if (filters.buildingType) {
-            filtered = filtered.filter(p => {
+            result = result.filter(property => {
                 if (filters.buildingType === 'new') {
-                    return p.isNew === true || p.isNew === 'true';
+                    return property.isNew === true || property.isNew === 'true';
                 }
+
                 if (filters.buildingType === 'old') {
-                    return p.isNew === false || p.isNew === 'false' || !p.isNew;
+                    return property.isNew === false ||
+                        property.isNew === 'false' ||
+                        !property.isNew;
                 }
+
                 return true;
             });
         }
 
-        return filtered;
-    }, [properties, filters]);
+        return result;
+    }
+    const filteredProperties = filterProperties();
 
-    const handleFilterChange = useCallback((newFilters: FilterState) => {
+    function handleFilterChange(newFilters: FilterState) {
         setFilters(newFilters);
-    }, []);
+    }
 
-    const resetFilters = useCallback(() => {
+    function resetFilters() {
         setFilters({});
-    }, []);
+    }
 
     return {
-        filteredProperties,
-        filters,
-        handleFilterChange,
-        resetFilters,
+        filteredProperties,  
+        filters,            
+        handleFilterChange,  
+        resetFilters,       
     };
 }

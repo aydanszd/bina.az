@@ -1,31 +1,27 @@
 'use client'
 import { useForm, useWatch } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useState, useTransition } from 'react'
 import { createAnnouncement } from '@/actions/announcement'
 import { Key, Calendar, User, Briefcase, Building2, Home } from 'lucide-react'
 
-const FormSchema = z.object({
-    type: z.enum(['Alış', 'Kiraye']),
-    property: z.string().min(1, 'Əmlak növü tələb olunur'),
-    ownerType: z.enum(['owner', 'agent']),
-    isNew: z.string(),
-    city: z.string().min(1, 'Şəhər tələb olunur'),
-    rooms: z.string().min(1, 'Otaq sayı tələb olunur'),
-    area: z.string().min(1, 'Sahə tələb olunur'),
-    floor: z.string().min(1, 'Mərtəbə tələb olunur'),
-    image1: z.string().url('Düzgün URL daxil edin').min(1, 'Şəkil 1 tələb olunur'),
-    image2: z.string().url('Düzgün URL daxil edin').min(1, 'Şəkil 2 tələb olunur'),
-    image3: z.string().url('Düzgün URL daxil edin').min(1, 'Şəkil 3 tələb olunur'),
-    description: z.string().optional(),
-    price: z.string().min(1, 'Qiymət tələb olunur'),
-    name: z.string().min(1, 'Ad tələb olunur'),
-    email: z.string().email('Düzgün e-mail daxil edin').min(1, 'E-mail tələb olunur'),
-    phone: z.string().min(1, 'Telefon nömrəsi tələb olunur'),
-})
-
-type FormData = z.infer<typeof FormSchema>
+type FormData = {
+    type: 'Alış' | 'Kiraye'
+    property: string
+    ownerType: 'owner' | 'agent'
+    isNew: string
+    city: string
+    rooms: string
+    area: string
+    floor: string
+    image1: string
+    image2: string
+    image3: string
+    description?: string
+    price: string
+    name: string
+    email: string
+    phone: string
+}
 
 function ImagePreview({ url }: { url: string }) {
     const [error, setError] = useState(false)
@@ -54,20 +50,17 @@ export default function AnnouncementForm() {
     const [step, setStep] = useState(1)
     const [isPending, startTransition] = useTransition()
     const [serverMessage, setServerMessage] = useState<{ message: string; success: boolean } | null>(null)
+    const [serverErrors, setServerErrors] = useState<{ [key: string]: string[] }>({})
 
     const cities = ["Bakı", "Naxçıvan", "Gəncə", "Xaçmaz", "Qəbələ", "Quba", "Qusar", "Şəmkir"]
 
     const {
         register,
         handleSubmit,
-        formState: { errors },
         setValue,
-        trigger,
         reset,
         control 
     } = useForm<FormData>({
-        resolver: zodResolver(FormSchema),
-        mode: 'onBlur',
         defaultValues: {
             type: 'Alış',
             property: '',
@@ -89,22 +82,23 @@ export default function AnnouncementForm() {
     const onSubmit = async (data: FormData) => {
         const formData = new FormData()
         Object.entries(data).forEach(([key, value]) => {
-            formData.append(key, String(value))
+            formData.append(key, String(value ?? ''))
         })
 
         startTransition(async () => {
             const result = await createAnnouncement({ message: undefined, errors: {} }, formData)
-            setServerMessage(result.success 
-                ? { message: result.message!, success: true }
-                : { message: result.message!, success: false }
-            )
             
             if (result.success) {
+                setServerMessage({ message: result.message!, success: true })
+                setServerErrors({})
                 setTimeout(() => {
                     reset()
                     setStep(1)
                     setServerMessage(null)
                 }, 3000)
+            } else {
+                setServerMessage({ message: result.message!, success: false })
+                setServerErrors(result.errors || {})
             }
         })
     }
@@ -171,10 +165,9 @@ export default function AnnouncementForm() {
                     <div className="grid grid-cols-3 gap-4">
                         <button
                             type="button"
-                            onClick={async () => {
+                            onClick={() => {
                                 setValue('property', 'Mənzil')
-                                const valid = await trigger('property')
-                                if (valid) setStep(3)
+                                setStep(3)
                             }}
                             className="border p-6 rounded-xl hover:border-blue-500 flex flex-col items-center gap-2"
                         >
@@ -183,10 +176,9 @@ export default function AnnouncementForm() {
                         </button>
                         <button
                             type="button"
-                            onClick={async () => {
+                            onClick={() => {
                                 setValue('property', 'Həyət evi')
-                                const valid = await trigger('property')
-                                if (valid) setStep(3)
+                                setStep(3)
                             }}
                             className="border p-6 rounded-xl hover:border-blue-500 flex flex-col items-center gap-2"
                         >
@@ -195,10 +187,9 @@ export default function AnnouncementForm() {
                         </button>
                         <button
                             type="button"
-                            onClick={async () => {
+                            onClick={() => {
                                 setValue('property', 'Ofis')
-                                const valid = await trigger('property')
-                                if (valid) setStep(3)
+                                setStep(3)
                             }}
                             className="border p-6 rounded-xl hover:border-blue-500 flex flex-col items-center gap-2"
                         >
@@ -206,9 +197,6 @@ export default function AnnouncementForm() {
                             Ofis
                         </button>
                     </div>
-                    {errors.property && (
-                        <p className="text-red-500 text-sm mt-2 text-center">{errors.property.message}</p>
-                    )}
                 </div>
             </form>
         )
@@ -282,8 +270,8 @@ export default function AnnouncementForm() {
                                 <option key={city} value={city}>{city}</option>
                             ))}
                         </select>
-                        {errors.city && (
-                            <p className="text-red-500 text-xs">{errors.city.message}</p>
+                        {serverErrors.city && (
+                            <p className="text-red-500 text-xs">{serverErrors.city[0]}</p>
                         )}
                     </div>
 
@@ -297,8 +285,8 @@ export default function AnnouncementForm() {
                                     placeholder="Otaq sayı *"
                                     className="p-4 border rounded-xl bg-gray-50 outline-blue-500 w-full"
                                 />
-                                {errors.rooms && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.rooms.message}</p>
+                                {serverErrors.rooms && (
+                                    <p className="text-red-500 text-xs mt-1">{serverErrors.rooms[0]}</p>
                                 )}
                             </div>
                             <div>
@@ -308,8 +296,8 @@ export default function AnnouncementForm() {
                                     placeholder="Sahə, m² *"
                                     className="p-4 border rounded-xl bg-gray-50 outline-blue-500 w-full"
                                 />
-                                {errors.area && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.area.message}</p>
+                                {serverErrors.area && (
+                                    <p className="text-red-500 text-xs mt-1">{serverErrors.area[0]}</p>
                                 )}
                             </div>
                         </div>
@@ -320,8 +308,8 @@ export default function AnnouncementForm() {
                                 placeholder="Mərtəbə *"
                                 className="w-full p-4 border rounded-xl bg-gray-50 outline-blue-500"
                             />
-                            {errors.floor && (
-                                <p className="text-red-500 text-xs mt-1">{errors.floor.message}</p>
+                            {serverErrors.floor && (
+                                <p className="text-red-500 text-xs mt-1">{serverErrors.floor[0]}</p>
                             )}
                         </div>
                         <div className="flex gap-4 items-center pt-2">
@@ -369,9 +357,9 @@ export default function AnnouncementForm() {
                                     <ImagePreview 
                                         url={index === 1 ? watchImage1 : index === 2 ? watchImage2 : watchImage3} 
                                     />
-                                    {errors[`image${index}` as keyof FormData] && (
+                                    {serverErrors[`image${index}`] && (
                                         <p className="text-red-500 text-xs mt-1">
-                                            {errors[`image${index}` as keyof FormData]?.message}
+                                            {serverErrors[`image${index}`][0]}
                                         </p>
                                     )}
                                 </div>
@@ -405,8 +393,8 @@ export default function AnnouncementForm() {
                             />
                             <span className="absolute right-4 top-4 font-bold text-gray-400 text-xl">₼</span>
                         </div>
-                        {errors.price && (
-                            <p className="text-red-500 text-xs">{errors.price.message}</p>
+                        {serverErrors.price && (
+                            <p className="text-red-500 text-xs">{serverErrors.price[0]}</p>
                         )}
                     </div>
 
@@ -437,8 +425,8 @@ export default function AnnouncementForm() {
                                 placeholder="Ad *"
                                 className="p-4 border rounded-xl bg-gray-50 outline-blue-500"
                             />
-                            {errors.name && (
-                                <p className="text-red-500 text-xs">{errors.name.message}</p>
+                            {serverErrors.name && (
+                                <p className="text-red-500 text-xs">{serverErrors.name[0]}</p>
                             )}
 
                             <input
@@ -447,8 +435,8 @@ export default function AnnouncementForm() {
                                 placeholder="E-mail *"
                                 className="p-4 border rounded-xl bg-gray-50 outline-blue-500"
                             />
-                            {errors.email && (
-                                <p className="text-red-500 text-xs">{errors.email.message}</p>
+                            {serverErrors.email && (
+                                <p className="text-red-500 text-xs">{serverErrors.email[0]}</p>
                             )}
 
                             <input
@@ -457,8 +445,8 @@ export default function AnnouncementForm() {
                                 placeholder="Telefon nömrəsi *"
                                 className="p-4 border rounded-xl bg-gray-50 outline-blue-500"
                             />
-                            {errors.phone && (
-                                <p className="text-red-500 text-xs">{errors.phone.message}</p>
+                            {serverErrors.phone && (
+                                <p className="text-red-500 text-xs">{serverErrors.phone[0]}</p>
                             )}
                         </div>
 
