@@ -1,5 +1,5 @@
 'use client'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useState, useTransition } from 'react'
@@ -62,9 +62,9 @@ export default function AnnouncementForm() {
         handleSubmit,
         formState: { errors },
         setValue,
-        watch,
         trigger,
-        reset
+        reset,
+        control // control əlavə edin
     } = useForm<FormData>({
         resolver: zodResolver(FormSchema),
         mode: 'onBlur',
@@ -77,14 +77,15 @@ export default function AnnouncementForm() {
         }
     })
 
-    const watchType = watch('type')
-    const watchProperty = watch('property')
-    const watchOwnerType = watch('ownerType')
-    const watchIsNew = watch('isNew')
-    const watchDescription = watch('description')
-    const watchImage1 = watch('image1')
-    const watchImage2 = watch('image2')
-    const watchImage3 = watch('image3')
+    // watch() əvəzinə useWatch() istifadə edin
+    const watchType = useWatch({ control, name: 'type' })
+    const watchProperty = useWatch({ control, name: 'property' })
+    const watchOwnerType = useWatch({ control, name: 'ownerType' })
+    const watchIsNew = useWatch({ control, name: 'isNew' })
+    const watchDescription = useWatch({ control, name: 'description' })
+    const watchImage1 = useWatch({ control, name: 'image1' })
+    const watchImage2 = useWatch({ control, name: 'image2' })
+    const watchImage3 = useWatch({ control, name: 'image3' })
 
     const onSubmit = async (data: FormData) => {
         const formData = new FormData()
