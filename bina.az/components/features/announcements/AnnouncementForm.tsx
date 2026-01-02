@@ -77,7 +77,6 @@ export default function AnnouncementForm() {
         }
     })
 
-    // watch() əvəzinə useWatch() istifadə edin
     const watchType = useWatch({ control, name: 'type' })
     const watchProperty = useWatch({ control, name: 'property' })
     const watchOwnerType = useWatch({ control, name: 'ownerType' })
