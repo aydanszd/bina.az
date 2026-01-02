@@ -85,7 +85,7 @@ export async function createAnnouncement(
         })
 
         revalidatePath('/')
-        revalidatePath('/buildings')
+        revalidatePath('/home')
 
         console.log('[SUCCESS] Building created:', building.id)
 

@@ -63,7 +63,8 @@ export default function AnnouncementForm() {
         formState: { errors },
         setValue,
         watch,
-        trigger
+        trigger,
+        reset
     } = useForm<FormData>({
         resolver: zodResolver(FormSchema),
         mode: 'onBlur',
@@ -100,8 +101,10 @@ export default function AnnouncementForm() {
             
             if (result.success) {
                 setTimeout(() => {
-                    window.location.href = '/buildings'
-                }, 2000)
+                    reset()
+                    setStep(1)
+                    setServerMessage(null)
+                }, 3000)
             }
         })
     }
