@@ -1,15 +1,15 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
-import { PropertyHeader } from '@/features/propertydetails/PropertyDetailHeader';
-import { PropertyGallery } from '@/features/propertydetails/PropertyDetailGallery';
-import { PropertyPlans } from '@/features/propertydetails/PropertyDetailPlans';
-import { PropertyInfo } from '@/features/propertydetails/PropertyIDetailnfo';
-import { PropertyFeatures } from '@/features/propertydetails/PropertyDetailFeatures';
-import { PropertyParameters } from '@/features/propertydetails/PropertyDetailParameters';
-import { PropertyAbout } from '@/features/propertydetails/PropertyDetailsAbout';
-import { PropertyLocation } from '@/features/propertydetails/PropertyDeatilLocation';
-import { PropertyListings } from '@/features/propertydetails/PropertyDetailListings';
-import { PropertySidebar } from '@/features/propertydetails/PropertyDetailSidebar';
+import { PropertyHeader } from '@/components/features/propertydetails/PropertyDetailHeader';
+import { PropertyGallery } from '@/components/features/propertydetails/PropertyDetailGallery';
+import { PropertyPlans } from '@/components/features/propertydetails/PropertyDetailPlans';
+import { PropertyInfo } from '@/components/features/propertydetails/PropertyIDetailnfo';
+import { PropertyFeatures } from '@/components/features/propertydetails/PropertyDetailFeatures';
+import { PropertyParameters } from '@/components/features/propertydetails/PropertyDetailParameters';
+import { PropertyAbout } from '@/components/features/propertydetails/PropertyDetailsAbout';
+import { PropertyLocation } from '@/components/features/propertydetails/PropertyDeatilLocation';
+import { PropertyListings } from '@/components/features/propertydetails/PropertyDetailListings';
+import { PropertySidebar } from '@/components/features/propertydetails/PropertyDetailSidebar';
 import { Property } from '@/types/homepage';
 
 interface PageProps {
