@@ -53,7 +53,6 @@ export default function AnnouncementForm() {
     const [serverErrors, setServerErrors] = useState<{ [key: string]: string[] }>({})
 
     const cities = ["Bakı", "Naxçıvan", "Gəncə", "Xaçmaz", "Qəbələ", "Quba", "Qusar", "Şəmkir"]
-
     const {
         register,
         handleSubmit,

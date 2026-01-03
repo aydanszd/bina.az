@@ -44,12 +44,12 @@ export async function createAnnouncement(
     formData: FormData 
 ): Promise<AnnouncementFormState> { 
 
-    const rawFormData = Object.fromEntries(formData.entries())
-    const validatedFields = AnnouncementSchema.safeParse(rawFormData)
+    const rawFormData = Object.fromEntries(formData.entries())//obyekt->array
+    const validatedFields = AnnouncementSchema.safeParse(rawFormData)// crash olmur
     
     if (!validatedFields.success) {
         return {
-            errors: validatedFields.error.flatten().fieldErrors,
+            errors: validatedFields.error.flatten().fieldErrors,//mürəkkəb Zod errori -> sadə obyekt.
             message: 'Zəhmət olmasa bütün tələb olunan sahələri düzgün doldurun',
             success: false,
         }
